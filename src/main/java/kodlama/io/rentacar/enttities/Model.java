@@ -1,6 +1,7 @@
 package kodlama.io.rentacar.enttities;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,21 +10,22 @@ import lombok.Setter;
 
 import java.util.List;
 
-// Lombok
 @Entity
-@Getter
 @Setter
-@AllArgsConstructor
+@Getter
 @NoArgsConstructor
-@Table(name = "brands")
-public class Brand {
+@AllArgsConstructor
+@Table(name = "models")
+public class Model {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @Column(name = "name") //custom name for column below
     private String name;
-    @OneToMany(mappedBy = "brand")
+    @ManyToOne
+//    @JsonManagedReference
+//    @JoinColumn(name = "brand_id")
+    private Brand brand;
+    @OneToMany(mappedBy = "model")
 //    @JsonBackReference
-    private List<Model> models;
-
+    private List<Car> cars;
 }
