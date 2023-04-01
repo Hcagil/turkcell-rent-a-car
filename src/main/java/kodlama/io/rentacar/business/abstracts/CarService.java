@@ -10,5 +10,6 @@ import java.util.List;
 public interface CarService {
 
     List<GetAllCarsResponse> getAll();
+    GetCarResponse getById(int id);
     CreateCarResponse add(CreateCarRequest request);
 }

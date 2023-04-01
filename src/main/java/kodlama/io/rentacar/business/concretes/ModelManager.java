@@ -36,7 +36,7 @@ public class ModelManager implements ModelService {
 
     @Override
     public GetModelResponse getById(int id) {
-        checkIfBrandExist(id);
+        checkIfCarExist(id);
         Model model = repository.findById(id).orElseThrow();
         GetModelResponse response = mapper.map(model, GetModelResponse.class);
         return response;
@@ -55,7 +55,7 @@ public class ModelManager implements ModelService {
 
     @Override
     public UpdateModelResponse update(int id, UpdateModelRequest request) {
-        checkIfBrandExist(id);
+        checkIfCarExist(id);
         Model model = mapper.map(request,Model.class);
         model.setId(id);
         Brand brand = brandRepository.findById(request.getBrandId()).orElseThrow();
@@ -71,7 +71,7 @@ public class ModelManager implements ModelService {
     }
 
     // Business Rules
-    private void checkIfBrandExist(int id){
+    private void checkIfCarExist(int id){
         if (!repository.existsById(id)) throw new RuntimeException("Model Id does not exist!");
     }
 }

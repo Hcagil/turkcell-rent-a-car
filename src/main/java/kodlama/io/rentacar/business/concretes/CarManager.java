@@ -4,6 +4,7 @@ import kodlama.io.rentacar.business.abstracts.CarService;
 import kodlama.io.rentacar.business.dto.requests.create.CreateCarRequest;
 import kodlama.io.rentacar.business.dto.responses.create.CreateCarResponse;
 import kodlama.io.rentacar.business.dto.responses.get.GetAllCarsResponse;
+import kodlama.io.rentacar.business.dto.responses.get.GetCarResponse;
 import kodlama.io.rentacar.enttities.Car;
 import kodlama.io.rentacar.enttities.Model;
 import kodlama.io.rentacar.repository.CarRepository;
@@ -33,6 +34,14 @@ public class CarManager implements CarService {
     }
 
     @Override
+    public GetCarResponse getById(int id) {
+        checkIfCarExist(id);
+        Car car = repository.findById(id).orElseThrow();
+        GetCarResponse response = mapper.map(car, GetCarResponse.class);
+        return response;
+    }
+
+    @Override
     public CreateCarResponse add(CreateCarRequest request) {
         Car car = mapper.map(request,Car.class);
         car.setId(0);
@@ -42,5 +51,10 @@ public class CarManager implements CarService {
         CreateCarResponse response = mapper.map(car, CreateCarResponse.class);
         response.setBrandName(model.getBrand().getName());
         return response;
+    }
+
+    // Business Rules
+    private void checkIfCarExist(int id){
+        if (!repository.existsById(id)) throw new RuntimeException("Car Id does not exist!");
     }
 }
