@@ -1,9 +1,11 @@
 package kodlama.io.rentacar.enttities;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import kodlama.io.rentacar.enttities.enums.State;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Setter
@@ -23,5 +25,6 @@ public class Car {
     @ManyToOne
 //    @JsonManagedReference
     private Model model;
-
+    @OneToOne
+    private Maintenance maintenance;
 }

@@ -20,8 +20,8 @@ public class CarsController {
     private final CarService service;
 
     @GetMapping("/")
-    public List<GetAllCarsResponse> getAll() {
-        return service.getAll();
+    public List<GetAllCarsResponse> getAll(boolean displayMaintenance) {
+        return service.getAll(displayMaintenance);
     }
 
     @GetMapping("/{id}")

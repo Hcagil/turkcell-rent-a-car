@@ -9,8 +9,8 @@ import lombok.Setter;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class CreateBrandResponse {
+public class CreateMaintenanceResponse {
     private int id;
-    private String name;
-
+    private String returnDate;
+    private int carId;
 }

@@ -9,12 +9,14 @@ import kodlama.io.rentacar.business.dto.responses.get.GetCarResponse;
 import kodlama.io.rentacar.business.dto.responses.update.UpdateCarResponse;
 import kodlama.io.rentacar.enttities.Car;
 import kodlama.io.rentacar.enttities.Model;
+import kodlama.io.rentacar.enttities.enums.State;
 import kodlama.io.rentacar.repository.CarRepository;
 import kodlama.io.rentacar.repository.ModelRepository;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -25,8 +27,11 @@ public class CarManager implements CarService {
     private final ModelRepository modelRepository;
 
     @Override
-    public List<GetAllCarsResponse> getAll() {
+    public List<GetAllCarsResponse> getAll(boolean displayMaintenance) {
         List<Car> cars = repository.findAll();
+        if (!displayMaintenance){
+            cars = checkIfCarState(cars);
+        }
         List<GetAllCarsResponse> responses = cars
                 .stream()
                 .map(car -> mapper.map(car, GetAllCarsResponse.class))
@@ -79,5 +84,15 @@ public class CarManager implements CarService {
     // Business Rules
     private void checkIfCarExist(int id) {
         if (!repository.existsById(id)) throw new RuntimeException("Car Id does not exist!");
+    }
+
+    private List<Car> checkIfCarState(List<Car> cars){
+        List<Car> newCars = new ArrayList<>();
+        for (Car car:cars) {
+            if (car.getState() != State.MAINTENANCE) {
+                newCars.add(car);
+            }
+        }
+        return newCars;
     }
 }
