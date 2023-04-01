@@ -9,7 +9,7 @@ import lombok.Setter;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class CreateBrandRequest {
+public class CreateModelRequest {
     private String name;
+    private int brandId;
 }
-

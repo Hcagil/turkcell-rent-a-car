@@ -62,8 +62,7 @@ public class BrandManager implements BrandService {
     @Override
     public UpdateBrandResponse update(int id, UpdateBrandRequest request) {
         checkIfBrandExist(id);
-        Brand brand = repository.findById(id).orElseThrow();
-        brand = mapper.map(request,Brand.class);
+        Brand brand = mapper.map(request,Brand.class);
         brand.setId(id);
         repository.save(brand);
         UpdateBrandResponse response = mapper.map(brand, UpdateBrandResponse.class);
@@ -78,7 +77,7 @@ public class BrandManager implements BrandService {
 
     // Business rules
     private void checkIfBrandExist(int id) {
-        if (!repository.existsById(id)) throw new RuntimeException("Marka bulunamadi!");
+        if (!repository.existsById(id)) throw new RuntimeException("Brand Id does not exist!");
     }
 
 }
