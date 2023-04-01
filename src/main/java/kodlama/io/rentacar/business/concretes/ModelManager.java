@@ -65,6 +65,11 @@ public class ModelManager implements ModelService {
         return response;
     }
 
+    @Override
+    public void delete(int id) {
+        repository.deleteById(id);
+    }
+
     // Business Rules
     private void checkIfBrandExist(int id){
         if (!repository.existsById(id)) throw new RuntimeException("Model Id does not exist!");
