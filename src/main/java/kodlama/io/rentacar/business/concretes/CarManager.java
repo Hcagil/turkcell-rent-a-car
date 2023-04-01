@@ -2,9 +2,11 @@ package kodlama.io.rentacar.business.concretes;
 
 import kodlama.io.rentacar.business.abstracts.CarService;
 import kodlama.io.rentacar.business.dto.requests.create.CreateCarRequest;
+import kodlama.io.rentacar.business.dto.requests.update.UpdateCarRequest;
 import kodlama.io.rentacar.business.dto.responses.create.CreateCarResponse;
 import kodlama.io.rentacar.business.dto.responses.get.GetAllCarsResponse;
 import kodlama.io.rentacar.business.dto.responses.get.GetCarResponse;
+import kodlama.io.rentacar.business.dto.responses.update.UpdateCarResponse;
 import kodlama.io.rentacar.enttities.Car;
 import kodlama.io.rentacar.enttities.Model;
 import kodlama.io.rentacar.repository.CarRepository;
@@ -51,6 +53,24 @@ public class CarManager implements CarService {
         CreateCarResponse response = mapper.map(car, CreateCarResponse.class);
         response.setBrandName(model.getBrand().getName());
         return response;
+    }
+
+    @Override
+    public UpdateCarResponse update(int id, UpdateCarRequest request) {
+        checkIfCarExist(id);
+        Car car = mapper.map(request, Car.class);
+        car.setId(id);
+        Model model = modelRepository.findById(request.getModelId()).orElseThrow();
+        car.setModel(model);
+        repository.save(car);
+        UpdateCarResponse response = mapper.map(car, UpdateCarResponse.class);
+        response.setBrandName(model.getBrand().getName());
+        return response;
+    }
+
+    @Override
+    public void delete(int id) {
+        repository.deleteById(id);
     }
 
     // Business Rules
