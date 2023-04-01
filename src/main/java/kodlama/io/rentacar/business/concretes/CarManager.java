@@ -31,7 +31,7 @@ public class CarManager implements CarService {
                 .stream()
                 .map(car -> mapper.map(car, GetAllCarsResponse.class))
                 .toList();
-        for (int i = 0; i<cars.size();i++){
+        for (int i = 0; i < cars.size(); i++) {
             responses.get(i).setBrandName(cars.get(i).getModel().getBrand().getName());
         }
         return responses;
@@ -47,7 +47,7 @@ public class CarManager implements CarService {
 
     @Override
     public CreateCarResponse add(CreateCarRequest request) {
-        Car car = mapper.map(request,Car.class);
+        Car car = mapper.map(request, Car.class);
         car.setId(0);
         Model model = modelRepository.findById(request.getModelId()).orElseThrow();
         car.setModel(model);
@@ -77,7 +77,7 @@ public class CarManager implements CarService {
     }
 
     // Business Rules
-    private void checkIfCarExist(int id){
+    private void checkIfCarExist(int id) {
         if (!repository.existsById(id)) throw new RuntimeException("Car Id does not exist!");
     }
 }
