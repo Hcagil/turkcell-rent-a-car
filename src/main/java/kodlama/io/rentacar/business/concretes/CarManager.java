@@ -31,7 +31,9 @@ public class CarManager implements CarService {
                 .stream()
                 .map(car -> mapper.map(car, GetAllCarsResponse.class))
                 .toList();
-        //! brandName = null
+        for (int i = 0; i<cars.size();i++){
+            responses.get(i).setBrandName(cars.get(i).getModel().getBrand().getName());
+        }
         return responses;
     }
 
@@ -62,14 +64,15 @@ public class CarManager implements CarService {
         car.setId(id);
         Model model = modelRepository.findById(request.getModelId()).orElseThrow();
         car.setModel(model);
-        repository.save(car);
-        UpdateCarResponse response = mapper.map(car, UpdateCarResponse.class);
+        Car createdCar = repository.save(car);
+        UpdateCarResponse response = mapper.map(createdCar, UpdateCarResponse.class);
         response.setBrandName(model.getBrand().getName());
         return response;
     }
 
     @Override
     public void delete(int id) {
+        checkIfCarExist(id);
         repository.deleteById(id);
     }
 

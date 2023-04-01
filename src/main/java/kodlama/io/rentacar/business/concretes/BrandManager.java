@@ -54,8 +54,8 @@ public class BrandManager implements BrandService {
 //        return response;
         Brand brand = mapper.map(request,Brand.class);
         brand.setId(0);
-        repository.save(brand);
-        CreateBrandResponse response = mapper.map(brand,CreateBrandResponse.class);
+        Brand createdBrand = repository.save(brand);
+        CreateBrandResponse response = mapper.map(createdBrand,CreateBrandResponse.class);
         return response;
     }
 
@@ -72,6 +72,7 @@ public class BrandManager implements BrandService {
 
     @Override
     public void delete(int id) {
+        checkIfBrandExist(id);
         repository.deleteById(id);
     }
 

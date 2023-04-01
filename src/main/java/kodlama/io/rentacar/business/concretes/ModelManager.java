@@ -48,8 +48,8 @@ public class ModelManager implements ModelService {
         model.setId(0);
         Brand brand = brandRepository.findById(request.getBrandId()).orElseThrow();
         model.setBrand(brand);
-        repository.save(model);
-        CreateModelResponse response = mapper.map(model, CreateModelResponse.class);
+        Model createdModel = repository.save(model);
+        CreateModelResponse response = mapper.map(createdModel, CreateModelResponse.class);
         return response;
     }
 
@@ -67,6 +67,7 @@ public class ModelManager implements ModelService {
 
     @Override
     public void delete(int id) {
+        checkIfModelExist(id);
         repository.deleteById(id);
     }
 
