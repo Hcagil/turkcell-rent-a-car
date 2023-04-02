@@ -1,4 +1,4 @@
-package kodlama.io.rentacar.enttities;
+package kodlama.io.rentacar.entities;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -8,24 +8,21 @@ import lombok.Setter;
 
 import java.util.List;
 
+// Lombok
 @Entity
-@Setter
 @Getter
-@NoArgsConstructor
+@Setter
 @AllArgsConstructor
-@Table(name = "models")
-public class Model {
+@NoArgsConstructor
+@Table(name = "brands")
+public class Brand {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+    @Column(name = "name") //custom name for column below
     private String name;
-
-    @ManyToOne
-//    @JsonManagedReference
-//    @JoinColumn(name = "brand_id")
-    private Brand brand;
-
-    @OneToMany(mappedBy = "model")
+    @OneToMany(mappedBy = "brand")
 //    @JsonBackReference
-    private List<Car> cars;
+    private List<Model> models;
+
 }

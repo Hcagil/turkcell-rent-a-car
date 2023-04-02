@@ -1,11 +1,13 @@
-package kodlama.io.rentacar.enttities;
+package kodlama.io.rentacar.entities;
 
 import jakarta.persistence.*;
-import kodlama.io.rentacar.enttities.enums.State;
+import kodlama.io.rentacar.entities.enums.State;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.List;
 
 @Entity
 @Setter
@@ -21,10 +23,10 @@ public class Car {
     private String plate;
     private double dailyPrice;
     @Enumerated(EnumType.STRING)
-    private State state; // Available, Rented, Maintance
+    private State state; // Available, Rented, Maintenance
     @ManyToOne
 //    @JsonManagedReference
     private Model model;
-    @OneToOne
-    private Maintenance maintenance;
+    @OneToMany(mappedBy = "car")
+    private List<Maintenance> maintenances;
 }

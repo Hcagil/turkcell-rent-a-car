@@ -1,17 +1,18 @@
 package kodlama.io.rentacar.business.concretes;
 
 import kodlama.io.rentacar.business.abstracts.CarService;
+import kodlama.io.rentacar.business.abstracts.ModelService;
 import kodlama.io.rentacar.business.dto.requests.create.CreateCarRequest;
 import kodlama.io.rentacar.business.dto.requests.update.UpdateCarRequest;
 import kodlama.io.rentacar.business.dto.responses.create.CreateCarResponse;
 import kodlama.io.rentacar.business.dto.responses.get.GetAllCarsResponse;
 import kodlama.io.rentacar.business.dto.responses.get.GetCarResponse;
+import kodlama.io.rentacar.business.dto.responses.get.GetModelResponse;
 import kodlama.io.rentacar.business.dto.responses.update.UpdateCarResponse;
-import kodlama.io.rentacar.enttities.Car;
-import kodlama.io.rentacar.enttities.Model;
-import kodlama.io.rentacar.enttities.enums.State;
+import kodlama.io.rentacar.entities.Car;
+import kodlama.io.rentacar.entities.Model;
+import kodlama.io.rentacar.entities.enums.State;
 import kodlama.io.rentacar.repository.CarRepository;
-import kodlama.io.rentacar.repository.ModelRepository;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -24,8 +25,7 @@ import java.util.List;
 public class CarManager implements CarService {
     private final CarRepository repository;
     private final ModelMapper mapper;
-    private final ModelRepository modelRepository;
-
+    private final ModelService modelService;
     @Override
     public List<GetAllCarsResponse> getAll(boolean displayMaintenance) {
         List<Car> cars = repository.findAll();
@@ -36,9 +36,7 @@ public class CarManager implements CarService {
                 .stream()
                 .map(car -> mapper.map(car, GetAllCarsResponse.class))
                 .toList();
-        for (int i = 0; i < cars.size(); i++) {
-            responses.get(i).setBrandName(cars.get(i).getModel().getBrand().getName());
-        }
+
         return responses;
     }
 
@@ -54,11 +52,11 @@ public class CarManager implements CarService {
     public CreateCarResponse add(CreateCarRequest request) {
         Car car = mapper.map(request, Car.class);
         car.setId(0);
-        Model model = modelRepository.findById(request.getModelId()).orElseThrow();
+        GetModelResponse getModelResponse = modelService.getById(car.getModel().getId());
+        Model model = mapper.map(getModelResponse, Model.class);
         car.setModel(model);
         repository.save(car);
         CreateCarResponse response = mapper.map(car, CreateCarResponse.class);
-        response.setBrandName(model.getBrand().getName());
         return response;
     }
 
@@ -67,11 +65,11 @@ public class CarManager implements CarService {
         checkIfCarExist(id);
         Car car = mapper.map(request, Car.class);
         car.setId(id);
-        Model model = modelRepository.findById(request.getModelId()).orElseThrow();
+        GetModelResponse getModelResponse = modelService.getById(car.getModel().getId());
+        Model model = mapper.map(getModelResponse, Model.class);
         car.setModel(model);
         Car createdCar = repository.save(car);
         UpdateCarResponse response = mapper.map(createdCar, UpdateCarResponse.class);
-        response.setBrandName(model.getBrand().getName());
         return response;
     }
 
@@ -79,6 +77,13 @@ public class CarManager implements CarService {
     public void delete(int id) {
         checkIfCarExist(id);
         repository.deleteById(id);
+    }
+
+    @Override
+    public void changeCarStatus(int id, State state) {
+        Car car = repository.findById(id).orElseThrow();
+        car.setState(state);
+        repository.save(car);
     }
 
     // Business Rules

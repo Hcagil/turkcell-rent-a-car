@@ -5,12 +5,17 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.Date;
+
 @Setter
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 public class GetMaintenanceResponse {
     private int id;
-    private String returnDate;
+    private Date returnDate;
+    private Date sentDate;
     private int carId;
+    private String carModelName;
+    private String carModelBrandName;
 }

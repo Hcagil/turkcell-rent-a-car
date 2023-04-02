@@ -1,15 +1,16 @@
 package kodlama.io.rentacar.business.concretes;
 
+import kodlama.io.rentacar.business.abstracts.BrandService;
 import kodlama.io.rentacar.business.abstracts.ModelService;
 import kodlama.io.rentacar.business.dto.requests.create.CreateModelRequest;
 import kodlama.io.rentacar.business.dto.requests.update.UpdateModelRequest;
 import kodlama.io.rentacar.business.dto.responses.create.CreateModelResponse;
 import kodlama.io.rentacar.business.dto.responses.get.GetAllModelsResponse;
+import kodlama.io.rentacar.business.dto.responses.get.GetBrandResponse;
 import kodlama.io.rentacar.business.dto.responses.get.GetModelResponse;
 import kodlama.io.rentacar.business.dto.responses.update.UpdateModelResponse;
-import kodlama.io.rentacar.enttities.Brand;
-import kodlama.io.rentacar.enttities.Model;
-import kodlama.io.rentacar.repository.BrandRepository;
+import kodlama.io.rentacar.entities.Brand;
+import kodlama.io.rentacar.entities.Model;
 import kodlama.io.rentacar.repository.ModelRepository;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -22,7 +23,7 @@ import java.util.List;
 public class ModelManager implements ModelService {
     private final ModelRepository repository;
     private final ModelMapper mapper;
-    private final BrandRepository brandRepository;
+    private final BrandService brandService;
 
     @Override
     public List<GetAllModelsResponse> getAll() {
@@ -46,7 +47,8 @@ public class ModelManager implements ModelService {
     public CreateModelResponse add(CreateModelRequest request) {
         Model model = mapper.map(request,Model.class);
         model.setId(0);
-        Brand brand = brandRepository.findById(request.getBrandId()).orElseThrow();
+        GetBrandResponse getBrandResponse = brandService.getById(model.getBrand().getId());
+        Brand brand = mapper.map(getBrandResponse, Brand.class);
         model.setBrand(brand);
         Model createdModel = repository.save(model);
         CreateModelResponse response = mapper.map(createdModel, CreateModelResponse.class);
@@ -58,7 +60,8 @@ public class ModelManager implements ModelService {
         checkIfModelExist(id);
         Model model = mapper.map(request,Model.class);
         model.setId(id);
-        Brand brand = brandRepository.findById(request.getBrandId()).orElseThrow();
+        GetBrandResponse getBrandResponse = brandService.getById(model.getBrand().getId());
+        Brand brand = mapper.map(getBrandResponse, Brand.class);
         model.setBrand(brand);
         repository.save(model);
         UpdateModelResponse response = mapper.map(model, UpdateModelResponse.class);
