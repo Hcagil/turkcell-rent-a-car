@@ -22,11 +22,14 @@ public class Car {
     private int modelYear;
     private String plate;
     private double dailyPrice;
+
     @Enumerated(EnumType.STRING)
     private State state; // Available, Rented, Maintenance
+
     @ManyToOne
 //    @JsonManagedReference
     private Model model;
+
     @OneToMany(mappedBy = "car")
     private List<Maintenance> maintenances;
 }

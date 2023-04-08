@@ -17,7 +17,6 @@ import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -27,11 +26,9 @@ public class CarManager implements CarService {
     private final ModelMapper mapper;
     private final ModelService modelService;
     @Override
-    public List<GetAllCarsResponse> getAll(boolean displayMaintenance) {
-        List<Car> cars = repository.findAll();
-        if (!displayMaintenance){
-            cars = checkIfCarState(cars);
-        }
+    public List<GetAllCarsResponse> getAll(boolean includeMaintenance) {
+        List<Car> cars = filterCarsByMaintenanceState(includeMaintenance);
+
         List<GetAllCarsResponse> responses = cars
                 .stream()
                 .map(car -> mapper.map(car, GetAllCarsResponse.class))
@@ -52,6 +49,7 @@ public class CarManager implements CarService {
     public CreateCarResponse add(CreateCarRequest request) {
         Car car = mapper.map(request, Car.class);
         car.setId(0);
+        car.setState(State.AVAILABLE);
         GetModelResponse getModelResponse = modelService.getById(car.getModel().getId());
         Model model = mapper.map(getModelResponse, Model.class);
         car.setModel(model);
@@ -80,7 +78,7 @@ public class CarManager implements CarService {
     }
 
     @Override
-    public void changeCarStatus(int id, State state) {
+    public void changeState(int id, State state) {
         Car car = repository.findById(id).orElseThrow();
         car.setState(state);
         repository.save(car);
@@ -91,13 +89,10 @@ public class CarManager implements CarService {
         if (!repository.existsById(id)) throw new RuntimeException("Car Id does not exist!");
     }
 
-    private List<Car> checkIfCarState(List<Car> cars){
-        List<Car> newCars = new ArrayList<>();
-        for (Car car:cars) {
-            if (car.getState() != State.MAINTENANCE) {
-                newCars.add(car);
-            }
+    private List<Car> filterCarsByMaintenanceState(boolean includeMaintenance){
+        if (includeMaintenance){
+            return repository.findAll();
         }
-        return newCars;
+        return repository.findAllByStateIsNot(State.MAINTENANCE);
     }
 }
