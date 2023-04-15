@@ -15,8 +15,8 @@ import java.util.List;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping("/api/maintenance")
-public class MaintenanceController {
+@RequestMapping("/api/maintenances")
+public class MaintenancesController {
     private final MaintenanceService service;
 
     @GetMapping("/")
@@ -35,8 +35,8 @@ public class MaintenanceController {
         return service.add(request);
     }
 
-    @PutMapping("/return/{carId}")
-    public GetMaintenanceResponse returnCarFromMaintenance(@PathVariable int carId){
+    @PutMapping("/return")
+    public GetMaintenanceResponse returnCarFromMaintenance(@RequestParam int carId){
         return service.returnCarFromMaintenance(carId);
     }
 
