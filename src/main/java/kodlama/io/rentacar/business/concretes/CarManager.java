@@ -30,7 +30,7 @@ public class CarManager implements CarService {
 
     @Override
     public List<GetAllCarsResponse> getAll(boolean includeMaintenance) {
-        List<Car> cars = rules.filterCarsByMaintenanceState(includeMaintenance);
+        List<Car> cars = filterCarsByMaintenanceState(includeMaintenance);
 
         List<GetAllCarsResponse> responses = cars
                 .stream()
@@ -88,5 +88,10 @@ public class CarManager implements CarService {
     }
 
     // Business Rules
-
+    public List<Car> filterCarsByMaintenanceState(boolean includeMaintenance) {
+        if (includeMaintenance) {
+            return repository.findAll();
+        }
+        return repository.findAllByStateIsNot(State.MAINTENANCE);
+    }
 }

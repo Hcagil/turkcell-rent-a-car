@@ -26,11 +26,6 @@ public class PaymentManager implements PaymentService {
     private final FakePosServiceAdapter posService;
     private final PaymentBusinessRules rules;
 
-    private static void checkIfBalanceIsEnough(double balance, double price) {
-        if (price > balance) {
-            throw new RuntimeException("Yetersiz Bakiye");
-        }
-    }
 
     @Override
     public List<GetAllPaymentsResponse> getAll() {
@@ -85,7 +80,7 @@ public class PaymentManager implements PaymentService {
     public void processRentalPayment(CreateRentalPaymentRequest request) {
         rules.checkIfPaymentIsValid(request);
         Payment payment = repository.findByCardNumber(request.getCardNumber());
-        checkIfBalanceIsEnough(payment.getBalance(), request.getPrice());
+        rules.checkIfBalanceIsEnough(payment.getBalance(), request.getPrice());
 
         posService.pay();// fake pos service
 

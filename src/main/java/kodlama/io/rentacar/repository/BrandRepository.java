@@ -5,6 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 // CRUD Operations
 public interface BrandRepository extends JpaRepository<Brand, Integer> {
-
+    boolean existsByNameIgnoreCase(String name);
 
 }
