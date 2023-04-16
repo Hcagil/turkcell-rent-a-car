@@ -7,6 +7,7 @@ import kodlama.io.rentacar.business.dto.responses.create.CreateBrandResponse;
 import kodlama.io.rentacar.business.dto.responses.get.GetAllBrandsResponse;
 import kodlama.io.rentacar.business.dto.responses.get.GetBrandResponse;
 import kodlama.io.rentacar.business.dto.responses.update.UpdateBrandResponse;
+import kodlama.io.rentacar.business.rules.BrandBusinessRules;
 import kodlama.io.rentacar.entities.Brand;
 import kodlama.io.rentacar.repository.BrandRepository;
 import lombok.AllArgsConstructor;
@@ -21,20 +22,21 @@ import java.util.List;
 public class BrandManager implements BrandService {
     private final BrandRepository repository;
     private final ModelMapper mapper;
+    private final BrandBusinessRules rules;
 
     @Override
     public List<GetAllBrandsResponse> getAll() {
         List<Brand> brands = repository.findAll();
         List<GetAllBrandsResponse> responses = brands
                 .stream()
-                .map(brand -> mapper.map(brand,GetAllBrandsResponse.class))
+                .map(brand -> mapper.map(brand, GetAllBrandsResponse.class))
                 .toList();
         return responses;
     }
 
     @Override
     public GetBrandResponse getById(int id) {
-        checkIfBrandExist(id);
+        rules.checkIfBrandExist(id);
         Brand brand = repository.findById(id).orElseThrow();
         GetBrandResponse response = mapper.map(brand, GetBrandResponse.class);
         return response;
@@ -52,17 +54,17 @@ public class BrandManager implements BrandService {
 //        response.setName(brand.getName());
 //
 //        return response;
-        Brand brand = mapper.map(request,Brand.class);
+        Brand brand = mapper.map(request, Brand.class);
         brand.setId(0);
         Brand createdBrand = repository.save(brand);
-        CreateBrandResponse response = mapper.map(createdBrand,CreateBrandResponse.class);
+        CreateBrandResponse response = mapper.map(createdBrand, CreateBrandResponse.class);
         return response;
     }
 
     @Override
     public UpdateBrandResponse update(int id, UpdateBrandRequest request) {
-        checkIfBrandExist(id);
-        Brand brand = mapper.map(request,Brand.class);
+        rules.checkIfBrandExist(id);
+        Brand brand = mapper.map(request, Brand.class);
         brand.setId(id);
         repository.save(brand);
         UpdateBrandResponse response = mapper.map(brand, UpdateBrandResponse.class);
@@ -72,13 +74,11 @@ public class BrandManager implements BrandService {
 
     @Override
     public void delete(int id) {
-        checkIfBrandExist(id);
+        rules.checkIfBrandExist(id);
         repository.deleteById(id);
     }
 
     // Business rules
-    private void checkIfBrandExist(int id) {
-        if (!repository.existsById(id)) throw new RuntimeException("Brand Id does not exist!");
-    }
+
 
 }

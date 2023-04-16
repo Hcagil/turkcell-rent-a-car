@@ -36,13 +36,13 @@ public class CarsController {
     }
 
     @PutMapping("/{id}")
-    public UpdateCarResponse update(@PathVariable int id, @RequestBody UpdateCarRequest request){
+    public UpdateCarResponse update(@PathVariable int id, @RequestBody UpdateCarRequest request) {
         return service.update(id, request);
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable int id){
+    public void delete(@PathVariable int id) {
         service.delete(id);
     }
 }

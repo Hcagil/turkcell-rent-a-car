@@ -9,6 +9,7 @@ import kodlama.io.rentacar.business.dto.responses.get.GetAllModelsResponse;
 import kodlama.io.rentacar.business.dto.responses.get.GetBrandResponse;
 import kodlama.io.rentacar.business.dto.responses.get.GetModelResponse;
 import kodlama.io.rentacar.business.dto.responses.update.UpdateModelResponse;
+import kodlama.io.rentacar.business.rules.ModelBusinessRules;
 import kodlama.io.rentacar.entities.Brand;
 import kodlama.io.rentacar.entities.Model;
 import kodlama.io.rentacar.repository.ModelRepository;
@@ -24,6 +25,7 @@ public class ModelManager implements ModelService {
     private final ModelRepository repository;
     private final ModelMapper mapper;
     private final BrandService brandService;
+    private final ModelBusinessRules rules;
 
     @Override
     public List<GetAllModelsResponse> getAll() {
@@ -37,7 +39,7 @@ public class ModelManager implements ModelService {
 
     @Override
     public GetModelResponse getById(int id) {
-        checkIfModelExist(id);
+        rules.checkIfModelExist(id);
         Model model = repository.findById(id).orElseThrow();
         GetModelResponse response = mapper.map(model, GetModelResponse.class);
         return response;
@@ -45,7 +47,7 @@ public class ModelManager implements ModelService {
 
     @Override
     public CreateModelResponse add(CreateModelRequest request) {
-        Model model = mapper.map(request,Model.class);
+        Model model = mapper.map(request, Model.class);
         model.setId(0);
         GetBrandResponse getBrandResponse = brandService.getById(model.getBrand().getId());
         Brand brand = mapper.map(getBrandResponse, Brand.class);
@@ -57,8 +59,8 @@ public class ModelManager implements ModelService {
 
     @Override
     public UpdateModelResponse update(int id, UpdateModelRequest request) {
-        checkIfModelExist(id);
-        Model model = mapper.map(request,Model.class);
+        rules.checkIfModelExist(id);
+        Model model = mapper.map(request, Model.class);
         model.setId(id);
         GetBrandResponse getBrandResponse = brandService.getById(model.getBrand().getId());
         Brand brand = mapper.map(getBrandResponse, Brand.class);
@@ -70,12 +72,10 @@ public class ModelManager implements ModelService {
 
     @Override
     public void delete(int id) {
-        checkIfModelExist(id);
+        rules.checkIfModelExist(id);
         repository.deleteById(id);
     }
 
     // Business Rules
-    private void checkIfModelExist(int id){
-        if (!repository.existsById(id)) throw new RuntimeException("Model Id does not exist!");
-    }
+
 }

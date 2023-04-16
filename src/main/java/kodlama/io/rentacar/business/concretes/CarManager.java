@@ -9,6 +9,7 @@ import kodlama.io.rentacar.business.dto.responses.get.GetAllCarsResponse;
 import kodlama.io.rentacar.business.dto.responses.get.GetCarResponse;
 import kodlama.io.rentacar.business.dto.responses.get.GetModelResponse;
 import kodlama.io.rentacar.business.dto.responses.update.UpdateCarResponse;
+import kodlama.io.rentacar.business.rules.CarBusinessRules;
 import kodlama.io.rentacar.entities.Car;
 import kodlama.io.rentacar.entities.Model;
 import kodlama.io.rentacar.entities.enums.State;
@@ -25,9 +26,11 @@ public class CarManager implements CarService {
     private final CarRepository repository;
     private final ModelMapper mapper;
     private final ModelService modelService;
+    private final CarBusinessRules rules;
+
     @Override
     public List<GetAllCarsResponse> getAll(boolean includeMaintenance) {
-        List<Car> cars = filterCarsByMaintenanceState(includeMaintenance);
+        List<Car> cars = rules.filterCarsByMaintenanceState(includeMaintenance);
 
         List<GetAllCarsResponse> responses = cars
                 .stream()
@@ -39,7 +42,7 @@ public class CarManager implements CarService {
 
     @Override
     public GetCarResponse getById(int id) {
-        checkIfCarExist(id);
+        rules.checkIfCarExist(id);
         Car car = repository.findById(id).orElseThrow();
         GetCarResponse response = mapper.map(car, GetCarResponse.class);
         return response;
@@ -60,7 +63,7 @@ public class CarManager implements CarService {
 
     @Override
     public UpdateCarResponse update(int id, UpdateCarRequest request) {
-        checkIfCarExist(id);
+        rules.checkIfCarExist(id);
         Car car = mapper.map(request, Car.class);
         car.setId(id);
         GetModelResponse getModelResponse = modelService.getById(car.getModel().getId());
@@ -73,7 +76,7 @@ public class CarManager implements CarService {
 
     @Override
     public void delete(int id) {
-        checkIfCarExist(id);
+        rules.checkIfCarExist(id);
         repository.deleteById(id);
     }
 
@@ -85,14 +88,5 @@ public class CarManager implements CarService {
     }
 
     // Business Rules
-    private void checkIfCarExist(int id) {
-        if (!repository.existsById(id)) throw new RuntimeException("Car Id does not exist!");
-    }
 
-    private List<Car> filterCarsByMaintenanceState(boolean includeMaintenance){
-        if (includeMaintenance){
-            return repository.findAll();
-        }
-        return repository.findAllByStateIsNot(State.MAINTENANCE);
-    }
 }

@@ -17,4 +17,4 @@ public class UpdateMaintenanceRequest {
     private boolean isCompleted;
     private LocalDateTime startDate;
     private LocalDateTime endDate;
-    }
+}
