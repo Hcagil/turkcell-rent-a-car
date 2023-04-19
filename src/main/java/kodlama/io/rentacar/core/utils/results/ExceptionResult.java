@@ -7,14 +7,14 @@ import java.time.LocalDateTime;
 
 @Setter
 @Getter
-public class ExceptionResult<T extends Exception> {
+public class ExceptionResult<T> {
     private LocalDateTime timestamp;
     private String type;
-    private String messsage;
+    private T message;
 
-    public ExceptionResult(Class<T> type, String messsage) {
-        this.timestamp = LocalDateTime.now();
-        this.type = type.getSimpleName();
-        this.messsage = messsage;
+    public ExceptionResult(String type, T message) {
+        timestamp = LocalDateTime.now();
+        this.type = type;
+        this.message = message;
     }
 }
